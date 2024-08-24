@@ -1,6 +1,6 @@
 """
 Universidad del Valle de Guatemala
-Nombres: Diego Fabián Morales Dávila | Erick Antonio Guerra 
+Nombres: Diego Fabián Morales Dávila | Erick Antonio Guerra Illescas
 Última versión: 23/08/24
 
 Proyecto 1 Mate Discreta
@@ -8,8 +8,11 @@ Proyecto 1 Mate Discreta
 Proyecto1.py
 Version de Python: 3.11.9
 """
+
+#importamos la libreria para validar que el usuario solo ingresara letras de A a Z y numero de 0 a 9
 import re
 
+#Función para construir los conjuntos.
 def construir_conjunto():
     nombre = input("Introduce el nombre del conjunto: ")
     conjunto = []
@@ -30,9 +33,9 @@ def construir_conjunto():
 
 #Conjunto universo (solo letras A-Z y números 0-9) para compararlo con los elementos ingresados.
 def universe(datos):
-     return re.fullmatch(r'([a-z0-9]+)(,[a-z0-9]+)*', datos) is not None
+    return re.fullmatch(r'([a-z0-9]+)(,[a-z0-9]+)*', datos) is not None
 
-#Todos los elementos de los conjuntos.
+#Realiza la union de los conjuntos y los muestra.
 def union(conjunto1, conjunto2):
     resultado = conjunto1[:]
     for element in conjunto2:
@@ -40,7 +43,7 @@ def union(conjunto1, conjunto2):
             resultado.append(element)
     return resultado
 
-#Mismos elementos en dos conjuntos.
+#Realiza la interseccion de los conjuntos y lo smuestra.
 def interseccion(conjunto1, conjunto2):
     return [element for element in conjunto1 if element in conjunto2]
 
@@ -56,14 +59,14 @@ def diferencia_simetrica(conjunto1, conjunto2):
     return diferencia(union_r, inter_r)
 
 
-#Complemetno conjunto elegido.
+#Complemetno del conjunto elejido.
 def complemento(conjunto):
     
     universo = [chr(i) for i in range(97, 123)] + [str(i) for i in range(10)]  #Especificar el conjunto universo con letras mayusculas según su asignación en ASCII y números enteros de 0 a 9.
     return [element for element in universo if element not in conjunto]
 
 
-#Elegir conjuntos a partir de los creados.
+#Elegir el conjunto existente.
 def elegir_conjunto(conjuntos):
     print("Conjuntos creados:")
 
@@ -95,7 +98,6 @@ def menu_operaciones(conjuntos):
                 if nombre2 == None:
                     print("Conjunto no encontrado. Pruebe otra vez.")
 
-
             if nombre1 and nombre2:
                 if opcion == '1':
                     resultado = union(conjuntos[nombre1], conjuntos[nombre2])
@@ -119,6 +121,7 @@ def menu_operaciones(conjuntos):
         else:
             print("Opción no válida, por favor intenta de nuevo.")
 
+#Menu principal de opciones.
 def menu_principal():
     conjuntos = {}
 
@@ -148,5 +151,5 @@ def menu_principal():
         else:
             print("Opción no válida, por favor intenta de nuevo.")
 
-
+#Llamada al menu principal.
 menu_principal()
