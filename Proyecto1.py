@@ -1,97 +1,152 @@
+"""
+Universidad del Valle de Guatemala
+Nombres: Diego Fabián Morales Dávila | Erick Antonio Guerra 
+Última versión: 23/08/24
+
+Proyecto 1 Mate Discreta
+
+Proyecto1.py
+Version de Python: 3.11.9
+"""
 import re
 
-def mostrar_menu_principal():
-    print("\nMenú Principal")
-    print("1. Crear conjuntos")
-    print("2. Operar conjuntos")
-    print("3. Salir")
+def construir_conjunto():
+    nombre = input("Introduce el nombre del conjunto: ")
+    conjunto = []
+    datos = input(f"Introduce los elementos del conjunto {nombre} separados por comas (solo letras A-Z y números 0-9): ")
+    datos = datos.lower()
+    
+    
+    if universe(datos):
+        for element in datos.split(','):
+            element = element.strip()
+            if element not in conjunto:  
+                conjunto.append(element)
+    else:
+        print("Uno o más datos no son válidos. Intentelo de nuevo.\n")
+    
+    return nombre, conjunto
 
-def mostrar_menu_operaciones():
-    print("\nOperaciones con conjuntos")
-    print("1. Complemento")
-    print("2. Unión")
-    print("3. Intersección")
-    print("4. Diferencia")
-    print("5. Diferencia Simétrica")
-    print("6. Regresar al menú principal")
 
-def validar_conjunto(entrada):
-    patron = r'^[A-Z0-9](,[A-Z0-9])*$'
-    return re.match(patron, entrada) is not None
+#Conjunto universo (solo letras A-Z y números 0-9) para compararlo con los elementos ingresados.
+def universe(datos):
+     return re.fullmatch(r'([a-z0-9]+)(,[a-z0-9]+)*', datos) is not None
 
-def crear_conjunto(nombre):
-    while True:
-        elementos = input(f"Ingrese los elementos del conjunto {nombre} separados por comas (A-Z, 0-9): ")
-        if validar_conjunto(elementos):
-            conjunto = [elemento.strip() for elemento in elementos.split(",")]
-            return conjunto
-        else:
-            print("Entrada inválida. Asegúrese de usar solo letras (A-Z) y números (0-9), separados por comas.")
-
-def union(A, B):
-    resultado = A.copy()
-    for elemento in B:
-        if elemento not in resultado:
-            resultado.append(elemento)
+#Todos los elementos de los conjuntos.
+def union(conjunto1, conjunto2):
+    resultado = conjunto1[:]
+    for element in conjunto2:
+        if element not in resultado:
+            resultado.append(element)
     return resultado
 
-def interseccion(A, B):
-    return [elemento for elemento in A if elemento in B]
+#Mismos elementos en dos conjuntos.
+def interseccion(conjunto1, conjunto2):
+    return [element for element in conjunto1 if element in conjunto2]
 
-def diferencia(A, B):
-    return [elemento for elemento in A if elemento not in B]
 
-def diferencia_simetrica(A, B):
-    return union(diferencia(A, B), diferencia(B, A))
+#Los elementos del primer conjunto que no estén en el segundo.
+def diferencia(conjunto1, conjunto2):
+    return [element for element in conjunto1 if element not in conjunto2]
 
-def complemento(A, U):
-    return [elemento for elemento in U if elemento not in A]
+#Diferencia simetrica debería devolver los elementos presentes en los conjuntos pero no contenidos en ambos.
+def diferencia_simetrica(conjunto1, conjunto2):
+    union_r = union(conjunto1, conjunto2)
+    inter_r = interseccion(conjunto1, conjunto2)
+    return diferencia(union_r, inter_r)
 
-def operar_conjuntos(opcion, A, B, U):
-    if opcion == 1:
-        print(f"Complemento de A: {complemento(A, U)}")
-    elif opcion == 2:
-        print(f"Unión: {union(A, B)}")
-    elif opcion == 3:
-        print(f"Intersección: {interseccion(A, B)}")
-    elif opcion == 4:
-        print(f"Diferencia A - B: {diferencia(A, B)}")
-    elif opcion == 5:
-        print(f"Diferencia Simétrica: {diferencia_simetrica(A, B)}")
-    else:
-        print("Opción no válida.")
 
-def main():
-    A, B = [], []
-    U = [chr(i) for i in range(65, 91)] + [str(i) for i in range(10)]  # Universo: A-Z y 0-9
-    opcion1 = 0
+#Complemetno conjunto elegido.
+def complemento(conjunto):
+    
+    universo = [chr(i) for i in range(97, 123)] + [str(i) for i in range(10)]  #Especificar el conjunto universo con letras mayusculas según su asignación en ASCII y números enteros de 0 a 9.
+    return [element for element in universo if element not in conjunto]
 
-    while opcion1 != 3:
-        mostrar_menu_principal()
-        opcion1 = int(input("Seleccione una opción: "))
 
-        match opcion1:
-            case 1:
-                A = crear_conjunto("A")
-                B = crear_conjunto("B")
-                print(f"Conjunto A: {A}")
-                print(f"Conjunto B: {B}")
-                print(f"Conjunto Universo (A-Z y 0-9): {U}")
-            case 2:
-                operando = True
-                while operando:
-                    mostrar_menu_operaciones()
-                    opcion2 = int(input("Seleccione una operación: "))
+#Elegir conjuntos a partir de los creados.
+def elegir_conjunto(conjuntos):
+    print("Conjuntos creados:")
 
-                    match opcion2:
-                        case 6:
-                            operando = False
-                        case _:
-                            operar_conjuntos(opcion2, A, B, U)
-            case 3:
-                print("Saliendo del programa.")
-            case _:
-                print("Opción no válida. Intente de nuevo.")
+    for nombre in conjuntos:
+        print(f"- {nombre}")
+    nombre = input("Elige un conjunto: ")
+    return nombre if nombre in conjuntos else None
 
-if __name__ == "__main__":
-    main()
+
+# Menu de Operaciones de conjuntos. 
+def menu_operaciones(conjuntos):
+    while True:
+        print("\nOperaciones disponibles:")
+        print("1. Unión")
+        print("2. Intersección")
+        print("3. Diferencia")
+        print("4. Diferencia Simétrica")
+        print("5. Complemento")
+        print("6. Volver al menú principal")
+        
+        opcion = input("Elige una operación: ")
+        
+        if opcion in ['1', '2', '3', '4']:
+            nombre1 = elegir_conjunto(conjuntos)
+            if nombre1 == None:
+                print("Conjunto no encontrado. Pruebe otra vez.")
+            else:
+                nombre2 = elegir_conjunto(conjuntos)
+                if nombre2 == None:
+                    print("Conjunto no encontrado. Pruebe otra vez.")
+
+
+            if nombre1 and nombre2:
+                if opcion == '1':
+                    resultado = union(conjuntos[nombre1], conjuntos[nombre2])
+                    print(f"Unión de {nombre1} y {nombre2}: {resultado}")
+                elif opcion == '2':
+                    resultado = interseccion(conjuntos[nombre1], conjuntos[nombre2])
+                    print(f"Intersección de {nombre1} y {nombre2}: {resultado}")
+                elif opcion == '3':
+                    resultado = diferencia(conjuntos[nombre1], conjuntos[nombre2])
+                    print(f"Diferencia entre {nombre1} y {nombre2}: {resultado}")
+                elif opcion == '4':
+                    resultado = diferencia_simetrica(conjuntos[nombre1], conjuntos[nombre2])
+                    print(f"Diferencia Simétrica entre {nombre1} y {nombre2}: {resultado}")
+        elif opcion == '5':
+            nombre1 = elegir_conjunto(conjuntos)
+            if nombre1:
+                resultado = complemento(conjuntos[nombre1])
+                print(f"Complemento de {nombre1}: {resultado}")
+        elif opcion == '6':
+            break
+        else:
+            print("Opción no válida, por favor intenta de nuevo.")
+
+def menu_principal():
+    conjuntos = {}
+
+    while True:
+        print("\nMenú principal:")
+        print("1. Construir conjunto")
+        print("2. Operar conjunto")
+        print("3. Finalizar")
+        
+        opcion = input("Elige una opción: ")
+        
+        if opcion == '1':
+            nombre, conjunto = construir_conjunto()
+            conjuntos[nombre] = conjunto
+            if conjuntos[nombre]:
+                print(f"Conjunto {nombre} construido: {conjunto}")
+            
+            
+        elif opcion == '2':
+            if not conjuntos:
+                print("Primero debes construir al menos un conjunto.")
+            else:
+                menu_operaciones(conjuntos)
+        elif opcion == '3':
+            print("Finalizando programa.")
+            break
+        else:
+            print("Opción no válida, por favor intenta de nuevo.")
+
+
+menu_principal()
